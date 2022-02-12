@@ -3,7 +3,7 @@
 # Calculates 'useless edges' using a naive algorithm.
 # A 'useless edge' is an edge that is not part of any improving or neutral 2-opt move.
 
-from typing import Dict, Tuple, List
+from typing import Optional, Dict, Tuple, List
 from tsp_reader import read_instance
 from tsp_math import distance
 
@@ -51,6 +51,20 @@ def get_total_edge_count(instance: Dict[int, Tuple[float, float]]) -> int:
     n = len(instance)
     return int(n * (n - 1) / 2)
 
+def get_average_edge_length(instance: Dict[int, Tuple[float, float]], edges: Optional[List[Tuple[int, int]]] = None) -> int:
+    length_sum = 0
+    if edges:
+        for a, b in edges:
+            length_sum += distance(instance=instance, a=a, b=b)
+        return length_sum / len(edges)
+    else:
+        all_indices = list(instance.keys())
+        n = len(all_indices)
+        for i in range(n):
+            for j in range(i + 1, n):
+                length_sum += distance(instance=instance, a=all_indices[i], b=all_indices[j])
+        return length_sum / n
+
 import sys
 
 if __name__ == "__main__":
@@ -62,6 +76,7 @@ if __name__ == "__main__":
         print(f"Read {len(instance)} points in instance.")
         total_edge_count = get_total_edge_count(instance=instance)
         print(f"Total edge count: {total_edge_count}")
+        print(f"Average edge length {get_average_edge_length(instance)}")
         non_useless_edges = get_non_useless_edges(instance)
         print(f"Non useless edge count: {len(non_useless_edges)}")
-
+        print(f"Non useless edge average length: {get_average_edge_length(instance, non_useless_edges)}")
