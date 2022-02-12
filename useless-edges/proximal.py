@@ -1,19 +1,38 @@
 #!/usr/bin/env python3
 
-# Calculates 'useless edges' using a naive algorithm.
-# A 'useless edge' is an edge that is not part of any improving or neutral 2-opt move.
+# Calculates 'useless edges' using a naively-implemented, but theoretically efficient algorithm.
+# A 'useless edge' is an edge that is not a part of any improving 2-opt move.
 
-from typing import Optional, Dict, Tuple, List
+from typing import Dict, Tuple, List
 from tsp_reader import read_instance
 from tsp_math import distance
 
-Instance = Dict[int, Tuple[float, float]] # point ID to coordinates
-Edge = Tuple[int, int] # point ID, point ID
+def get_nearby_points(instance: Dict[int, Tuple[float, float]], center: int, radius: int) -> List[int]:
+    nearby_points = []
+    for p in instance:
+        if p == center:
+            continue
+        if distance(instance=instance, a=center, b=p) <= radius:
+            nearby_points.append(p)
+    return nearby_points
 
-def is_useless_edge(instance: Instance, a: int, b: int) -> bool:
+def is_useless_edge(instance: Dict[int, Tuple[float, float]], a: int, b: int) -> bool:
     """Returns True if the input edge specified by 2 endpoint IDs (a, b) is useless. """
     all_indices = list(instance.keys())
     ab = distance(instance=instance, a=a, b=b)
+    a_nearby = get_nearby_points(instance=instance, center=a, radius=ab)
+    for c in a_nearby:
+        if c == b:
+            continue
+        ac = distance(instance=instance, a=a, b=c)
+        c_nearby = get_nearby_points(instance=instance, center=c, radius=ab - ac)
+        for e in c_nearby:
+            ce = distance(instance=instance, a=c, b=e)
+
+
+
+
+
     for c in all_indices:
         if c in (a, b):
             continue
@@ -36,7 +55,7 @@ def is_useless_edge(instance: Instance, a: int, b: int) -> bool:
             return True
     return False
 
-def get_non_useless_edges(instance: Instance) -> List[Edge]:
+def get_non_useless_edges(instance: Dict[int, Tuple[float, float]]) -> List[Tuple[int, int]]:
     all_indices = list(instance.keys())
     n = len(all_indices)
     non_useless_edges = []
@@ -50,26 +69,11 @@ def get_non_useless_edges(instance: Instance) -> List[Edge]:
             non_useless_edges.append((a, b))
     return non_useless_edges
 
-def get_total_edge_count(instance: Instance) -> int:
+def get_total_edge_count(instance: Dict[int, Tuple[float, float]]) -> int:
     n = len(instance)
     return int(n * (n - 1) / 2)
 
-def get_average_edge_length(instance: Instance, edges: Optional[List[Edge]] = None) -> int:
-    length_sum = 0
-    if edges:
-        for a, b in edges:
-            length_sum += distance(instance=instance, a=a, b=b)
-        return length_sum / len(edges)
-    else:
-        all_indices = list(instance.keys())
-        n = len(all_indices)
-        for i in range(n):
-            for j in range(i + 1, n):
-                length_sum += distance(instance=instance, a=all_indices[i], b=all_indices[j])
-        return length_sum / n
-
 import sys
-import mst
 
 if __name__ == "__main__":
     # Read instance file.
@@ -80,13 +84,6 @@ if __name__ == "__main__":
         print(f"Read {len(instance)} points in instance.")
         total_edge_count = get_total_edge_count(instance=instance)
         print(f"Total edge count: {total_edge_count}")
-        print(f"Average edge length {get_average_edge_length(instance)}")
         non_useless_edges = get_non_useless_edges(instance)
         print(f"Non useless edge count: {len(non_useless_edges)}")
-        print(f"Non useless edge average length: {get_average_edge_length(instance, non_useless_edges)}")
-
-        mst_edges = mst.mst(instance=instance)
-        for e in mst_edges:
-            if is_useless_edge(instance=instance, a=e[1], b=e[2]):
-                print(f"found useless mst edge: {e}")
 
