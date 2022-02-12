@@ -36,18 +36,6 @@ def read_tour(path: str) -> List[int]:
             tour.append(point_id)
     return tour
 
-def distance(instance: Dict[int, Tuple[float, float]], i: int, j: int) -> int:
-    """instance is a list of points. each point is a pair of coordinates x, y.
-    i and j identify points in the list as indices.
-    """
-    ix = instance[i][0]
-    iy = instance[i][1]
-    jx = instance[j][0]
-    jy = instance[j][1]
-    dx = jx - ix
-    dy = jy - iy
-    return int(round((dx ** 2 + dy ** 2) ** 0.5))
-
 import sys
 
 if __name__ == "__main__":
