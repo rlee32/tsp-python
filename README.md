@@ -12,3 +12,9 @@ Small problems for quick testing are stored in 'data/' for convenience.
 
 More problems can be found at:
 https://www.math.uwaterloo.ca/tsp/vlsi/index.html
+
+# Folder Descriptions
+
+mst: functions to make minimum spanning trees.
+
+useless-edges: functions to identify useless edges.
