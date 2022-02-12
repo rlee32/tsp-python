@@ -18,3 +18,5 @@ https://www.math.uwaterloo.ca/tsp/vlsi/index.html
 mst: functions to make minimum spanning trees.
 
 useless-edges: functions to identify useless edges.
+
+tsp_plot: functions to plot TSP instances and edges.

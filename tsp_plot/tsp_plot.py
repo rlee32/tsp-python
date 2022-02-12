@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+
+from matplotlib import pyplot as plt
+from typing import Dict, Tuple, List
+
+Instance = Dict[int, Tuple[float, float]]
+Tour = List[int]
+
+def plot_points(instance: Instance, style='x', show=True):
+    points = list(instance.values())
+    x = [p[0] for p in points]
+    y = [p[1] for p in points]
+    plt.plot(x, y, style)
+    if show:
+        show_plot()
+
+def plot_tour(instance: Instance, tour: Tour, linestyle='-', show=True):
+    x = [instance[a][0] for a in tour]
+    y = [instance[a][1] for a in tour]
+    n = len(instance)
+    x.append(x[0])
+    y.append(y[0])
+    plt.plot(x, y, linestyle)
+    if show:
+        show_plot()
+
+def show_plot():
+    plt.gca().set_aspect('equal', adjustable='box')
+    plt.show()
+
+import sys
+from tsp_reader import read_instance, read_tour
+
+if __name__ == '__main__':
+    print("inputs: instance_path optional_tour_path")
+    instance = read_instance(sys.argv[1])
+    print(f"instance count: {len(instance)}")
+    plot_points_only = len(sys.argv) == 2
+    plot_points(instance=instance, style='x', show=plot_points_only)
+    if not plot_points_only:
+        tour = read_tour(sys.argv[2])
+        print(f"tour count: {len(tour)}")
+        plot_tour(instance=instance, tour=tour)
