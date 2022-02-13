@@ -4,7 +4,7 @@
 # A 'useless edge' is an edge that is not part of any improving or neutral 2-opt move.
 
 from typing import Optional, Dict, Tuple, List
-from tsp_reader import read_instance
+from tsp_reader import read_instance, read_tour
 from tsp_math import distance
 
 Instance = Dict[int, Tuple[float, float]] # point ID to coordinates
@@ -70,6 +70,7 @@ def get_average_edge_length(instance: Instance, edges: Optional[List[Edge]] = No
 
 import sys
 import mst
+from tsp_plot import plot_tour, plot_edge
 
 if __name__ == "__main__":
     # Read instance file.
@@ -89,4 +90,11 @@ if __name__ == "__main__":
         for e in mst_edges:
             if is_useless_edge(instance=instance, a=e[1], b=e[2]):
                 print(f"found useless mst edge: {e}")
+                # plot useless edges, if optimal tour file supplied.
+                if len(sys.argv) > 2:
+                    plot_edge(instance=instance, edge=e[1:], linestyle=":", show=False)
 
+        # plot optimal tour file.
+        if len(sys.argv) > 2:
+            tour = read_tour(path=sys.argv[2])
+            plot_tour(instance=instance, tour=tour, linestyle='-')
