@@ -30,7 +30,7 @@ def is_useless_edge(instance: Dict[int, Tuple[float, float]], a: int, b: int) ->
             ce = distance(instance=instance, a=c, b=e)
 
 
-
+    # TODO: under construction!
 
 
     for c in all_indices:
