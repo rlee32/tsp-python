@@ -7,7 +7,19 @@ Instance = Dict[int, Tuple[float, float]]
 Tour = List[int]
 Edge = Tuple[int, int]
 
-def plot_points(instance: Instance, style='x', show=True):
+def plot_point_by_id(instance: Instance, point_id: int, style='x', show=True):
+    p = instance[point_id]
+    x = p[0]
+    y = p[1]
+    plt.plot(x, y, style)
+    if show:
+        show_plot()
+
+def plot_points_by_ids(instance: Instance, point_ids: List[int], style='x', show=True):
+    for point_id in point_ids:
+        plot_point_by_id(instance=instance, point_id=point_id, style=style, show=show)
+
+def plot_points_by_instance(instance: Instance, style='x', show=True):
     points = list(instance.values())
     x = [p[0] for p in points]
     y = [p[1] for p in points]
