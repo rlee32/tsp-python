@@ -17,7 +17,9 @@ def plot_point_by_id(instance: Instance, point_id: int, style='x', show=True):
 
 def plot_points_by_ids(instance: Instance, point_ids: List[int], style='x', show=True):
     for point_id in point_ids:
-        plot_point_by_id(instance=instance, point_id=point_id, style=style, show=show)
+        plot_point_by_id(instance=instance, point_id=point_id, style=style, show=False)
+    if show:
+        show_plot()
 
 def plot_points_by_instance(instance: Instance, style='x', show=True):
     points = list(instance.values())
@@ -43,6 +45,12 @@ def plot_edge(instance: Instance, edge: Edge, linestyle=':', show=True):
     x = [instance[a][0], instance[b][0]]
     y = [instance[a][1], instance[b][1]]
     plt.plot(x, y, linestyle)
+    if show:
+        show_plot()
+
+def plot_edges(instance: Instance, edges: List[Edge], linestyle=':', show=True):
+    for edge in edges:
+        plot_edge(instance=instance, edge=edge, linestyle=linestyle, show=False)
     if show:
         show_plot()
 
