@@ -5,6 +5,7 @@ import sys
 from typing import Optional, Dict, Tuple, List
 import tsp_math
 import tsp_plot
+import mst
 
 Edge = Tuple[int, int]
 Tour = List[int]
@@ -43,4 +44,11 @@ if __name__ == "__main__":
         iterations += 1
     print(f"Done after {iterations} improvements.")
     print(f"Final tour length: {tsp_math.tour_length(instance=instance, tour=tour)}")
-    tsp_plot.plot_tour(instance=instance, tour=tour)
+    tsp_plot.plot_tour(instance=instance, tour=tour, show=False)
+
+    edges = mst.mst(instance=instance)
+    edges = [edge[1:] for edge in edges]
+    tsp_plot.plot_edges(instance=instance, edges=edges, linestyle="g-.", show=False)
+
+    opt_tour = tsp_reader.read_tour(sys.argv[2])
+    tsp_plot.plot_tour(instance=instance, tour=opt_tour, linestyle="b:")
