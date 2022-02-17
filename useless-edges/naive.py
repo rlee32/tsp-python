@@ -40,15 +40,17 @@ def get_non_useless_edges(instance: Instance) -> List[Edge]:
     all_indices = list(instance.keys())
     n = len(all_indices)
     non_useless_edges = []
+    useless_edges = []
     for i in range(n):
         print(i)
         a = all_indices[i]
         for j in range(i + 1, n):
             b = all_indices[j]
             if is_useless_edge(instance=instance, a=a, b=b):
+                useless_edges.append((a, b))
                 continue
             non_useless_edges.append((a, b))
-    return non_useless_edges
+    return non_useless_edges, useless_edges
 
 def get_total_edge_count(instance: Instance) -> int:
     n = len(instance)
@@ -82,9 +84,27 @@ if __name__ == "__main__":
         total_edge_count = get_total_edge_count(instance=instance)
         print(f"Total edge count: {total_edge_count}")
         print(f"Average edge length {get_average_edge_length(instance)}")
-        non_useless_edges = get_non_useless_edges(instance)
+        non_useless_edges, useless_edges = get_non_useless_edges(instance)
         print(f"Non useless edge count: {len(non_useless_edges)}")
         print(f"Non useless edge average length: {get_average_edge_length(instance, non_useless_edges)}")
+
+        # construct length histogram
+        non_useless_lengths = {}
+        for e in non_useless_edges:
+            l = distance(instance=instance, a=e[0], b=e[1])
+            if l not in non_useless_lengths:
+                non_useless_lengths[l] = 0
+            non_useless_lengths[l] += 1
+        useless_lengths = {}
+        for e in useless_edges:
+            l = distance(instance=instance, a=e[0], b=e[1])
+            if l not in useless_lengths:
+                useless_lengths[l] = 0
+            useless_lengths[l] += 1
+        for l in non_useless_lengths:
+            nue = non_useless_lengths.get(l, 0)
+            ue = useless_lengths.get(l, 0)
+            print(f"{l}: {nue / (nue + ue)}")
 
         mst_edges = mst.mst(instance=instance)
         for e in mst_edges:
@@ -93,8 +113,10 @@ if __name__ == "__main__":
                 # plot useless edges, if optimal tour file supplied.
                 if len(sys.argv) > 2:
                     plot_edge(instance=instance, edge=e[1:], linestyle=":", show=False)
+            else:
+                plot_edge(instance=instance, edge=e[1:], linestyle="b-", show=False)
 
         # plot optimal tour file.
         if len(sys.argv) > 2:
             tour = read_tour(path=sys.argv[2])
-            plot_tour(instance=instance, tour=tour, linestyle='-')
+            plot_tour(instance=instance, tour=tour, linestyle='y:')
