@@ -6,6 +6,7 @@ from typing import Optional, Dict, Tuple, List
 
 from tsp_reader import read_instance
 from tsp_math import distance
+import random
 
 Instance = Dict[int, Tuple[float, float]] # point ID to coordinates
 Edge = Tuple[int, int, int] # distance, min point ID, max point ID
@@ -24,8 +25,14 @@ def make_sorted_edges(instance: Instance) -> List[Edge]:
         a = all_ids[i]
         for j in range(i + 1, n):
             b = all_ids[j]
-            edges.append(make_edge(instance, a=a, b=b))
+            randint = random.randint(0, n)
+            # add a random int so that edges arent deterministically placed in the MST.
+            edge = make_edge(instance, a=a, b=b)
+            edge = (edge[0], randint, edge[1], edge[2])
+            edges.append(edge)
     edges.sort()
+    # take out the random int.
+    edges = [(edge[0], edge[2], edge[3]) for edge in edges]
     return edges
 
 def mst(instance: Instance) -> List[Edge]:

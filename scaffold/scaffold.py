@@ -5,7 +5,7 @@ import mst
 import two_opt
 import sys
 from typing import List
-from tsp_types import Edge, Tour
+from tsp_types import Edge, Tour, Instance
 import tsp_math
 
 def normalize_edge(edge: Edge) -> Edge:
@@ -25,16 +25,14 @@ def get_new_edges(tour: Tour, edges: List[Edge]) -> List[Edge]:
             new_edges.append(edge)
     return new_edges
 
-if __name__ == "__main__":
-    instance_file = sys.argv[1]
-    instance = tsp_reader.read_instance(instance_file)
-    tour = two_opt.hill_climb(instance=instance, tour=None, randomize=True)
+def hill_climb(original_instance: Instance, tour: Tour) -> Tour:
+    instance = original_instance.copy()
+    original_tour = tour[:]
+    initial_tour_length = tsp_math.tour_length(instance=instance, tour=tour)
     mst_edges = mst.mst(instance=instance)
     mst_edges = [edge[1:] for edge in mst_edges]
     new_edges = get_new_edges(tour=tour, edges=mst_edges)
-    first_local_optimum = tsp_math.tour_length(instance=instance, tour=tour)
     print(f"adding {len(new_edges)} new mst edges.")
-    print(f"original instance size: {len(instance)}")
     new_point_ids = tsp_math.add_midpoints_to_instance(instance=instance, edges=new_edges)
     print(f"new instance size: {len(instance)}")
     tour_set = set(tour)
@@ -52,6 +50,17 @@ if __name__ == "__main__":
     final_local_optimum = tsp_math.tour_length(instance=instance, tour=tour)
     print(f"final tour length: {final_local_optimum}")
     assert(len(tour) + len(new_point_ids) == augmented_size)
-    print(f"scaffolding: {first_local_optimum} -> {final_local_optimum}")
+    print(f"scaffolding: {initial_tour_length} -> {final_local_optimum}")
+    print()
+    if initial_tour_length < final_local_optimum:
+        return original_tour
+    else:
+        return tour
 
+if __name__ == "__main__":
+    instance_file = sys.argv[1]
+    instance = tsp_reader.read_instance(instance_file)
+    tour = two_opt.hill_climb(instance=instance, tour=None, randomize=True)
 
+    while True:
+        tour = hill_climb(original_instance=instance, tour=tour)
