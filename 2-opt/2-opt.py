@@ -32,9 +32,9 @@ def improve(instance: Instance, tour: Tour) -> Optional[Tour]:
                 return tour[:i+1] + tour[i+1:j+1][::-1] + tour[j+1:]
     return None
 
-if __name__ == "__main__":
-    instance = tsp_reader.read_instance(sys.argv[1])
-    tour = list(instance.keys())
+def hill_climb(instance: Instance, tour: Optional[Tour] = None) -> Tour:
+    if tour is None:
+        tour = list(instance.keys())
     print(f"Initial tour length: {tsp_math.tour_length(instance=instance, tour=tour)}")
     new_tour = improve(instance=instance, tour=tour)
     iterations = 0
@@ -44,6 +44,11 @@ if __name__ == "__main__":
         iterations += 1
     print(f"Done after {iterations} improvements.")
     print(f"Final tour length: {tsp_math.tour_length(instance=instance, tour=tour)}")
+    return tour
+
+if __name__ == "__main__":
+    instance = tsp_reader.read_instance(sys.argv[1])
+    tour = hill_climb(instance=instance)
     tsp_plot.plot_tour(instance=instance, tour=tour, show=False)
 
     edges = mst.mst(instance=instance)
