@@ -76,7 +76,7 @@ def mst(instance: Instance) -> List[Edge]:
         check.add(b)
     assert(len(check) == len(instance))
 
-    return edges
+    return [(edge[1], edge[2]) for edge in edges]
 
 def get_degree_to_points(edges: List[Edge]):
     point_to_degree = {}
@@ -98,8 +98,6 @@ if __name__ == "__main__":
     instance_file = sys.argv[1]
     instance = read_instance(instance_file)
     edges = mst(instance=instance)
-    total = sum([e[0] for e in edges])
-    print(f'total cost: {total}')
 
     degree_to_points = get_degree_to_points(edges = edges)
     high_deg_points = []
@@ -107,6 +105,5 @@ if __name__ == "__main__":
         if deg >= 3:
             high_deg_points += degree_to_points[deg]
 
-    edges = [edge[1:] for edge in edges]
     tsp_plot.plot_edges(instance=instance, edges=edges, show=False)
     tsp_plot.plot_points_by_ids(instance=instance, point_ids=high_deg_points, style='ro', show=True)
