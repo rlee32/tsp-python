@@ -21,8 +21,7 @@ def hill_climb(instance: Instance) -> Tour:
     while remaining_points:
         print(f"current tour len: {len(tour)}")
         tour = two_opt.hill_climb(instance=instance, tour=tour)
-        # TODO: min-cost insertion
-        tour.append(remaining_points.pop())
+        tour = tsp_math.min_cost_insertion(instance=instance, tour=tour, new_point_id=remaining_points.pop())
     assert(len(instance) == len(tour))
     return two_opt.hill_climb(instance=instance, tour=tour)
 
