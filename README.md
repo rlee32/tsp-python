@@ -20,3 +20,7 @@ mst: functions to make minimum spanning trees.
 useless-edges: functions to identify useless edges.
 
 tsp_plot: functions to plot TSP instances and edges.
+
+2-opt: simple 2-opt hill climbing solver (quadratic work complexity).
+
+instance_buildup: solver in which 2-opt is applied to growing instance size.
