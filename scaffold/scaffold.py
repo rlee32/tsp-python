@@ -30,7 +30,6 @@ def hill_climb(original_instance: Instance, tour: Tour) -> Tour:
     original_tour = tour[:]
     initial_tour_length = tsp_math.tour_length(instance=instance, tour=tour)
     mst_edges = mst.mst(instance=instance)
-    mst_edges = [edge[1:] for edge in mst_edges]
     new_edges = get_new_edges(tour=tour, edges=mst_edges)
     print(f"adding {len(new_edges)} new mst edges.")
     new_point_ids = tsp_math.add_midpoints_to_instance(instance=instance, edges=new_edges)

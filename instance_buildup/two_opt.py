@@ -5,7 +5,6 @@ import sys
 from typing import Optional, Dict, Tuple, List
 import tsp_math
 import tsp_plot
-import mst
 import random
 
 Edge = Tuple[int, int]

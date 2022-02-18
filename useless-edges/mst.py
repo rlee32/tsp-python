@@ -76,19 +76,34 @@ def mst(instance: Instance) -> List[Edge]:
         check.add(b)
     assert(len(check) == len(instance))
 
-    return edges
+    return [(edge[1], edge[2]) for edge in edges]
+
+def get_degree_to_points(edges: List[Edge]):
+    point_to_degree = {}
+    for edge in edges:
+        for point_id in edge:
+            point_to_degree[point_id] = point_to_degree.get(point_id, 0) + 1
+    degree_to_points = {}
+    for point_id in point_to_degree:
+        deg = point_to_degree[point_id]
+        if deg not in degree_to_points:
+            degree_to_points[deg] = []
+        degree_to_points[deg].append(point_id)
+    return degree_to_points
 
 import sys
+import tsp_plot
 
 if __name__ == "__main__":
     instance_file = sys.argv[1]
     instance = read_instance(instance_file)
     edges = mst(instance=instance)
-    total = sum([e[0] for e in edges])
-    print(f'total cost: {total}')
 
-    #plot_edges(instance, edges)
-    #plot_tour(instance, tour)
-    #plot_diff(instance, tour, edges)
-    #plt.axis('square')
-    #plt.show()
+    degree_to_points = get_degree_to_points(edges = edges)
+    high_deg_points = []
+    for deg in degree_to_points:
+        if deg >= 3:
+            high_deg_points += degree_to_points[deg]
+
+    tsp_plot.plot_edges(instance=instance, edges=edges, show=False)
+    tsp_plot.plot_points_by_ids(instance=instance, point_ids=high_deg_points, style='ro', show=True)

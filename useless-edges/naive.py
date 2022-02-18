@@ -108,13 +108,13 @@ if __name__ == "__main__":
 
         mst_edges = mst.mst(instance=instance)
         for e in mst_edges:
-            if is_useless_edge(instance=instance, a=e[1], b=e[2]):
+            if is_useless_edge(instance=instance, a=e[0], b=e[1]):
                 print(f"found useless mst edge: {e}")
                 # plot useless edges, if optimal tour file supplied.
                 if len(sys.argv) > 2:
-                    plot_edge(instance=instance, edge=e[1:], linestyle=":", show=False)
+                    plot_edge(instance=instance, edge=e, linestyle=":", show=False)
             else:
-                plot_edge(instance=instance, edge=e[1:], linestyle="b-", show=False)
+                plot_edge(instance=instance, edge=e, linestyle="b-", show=False)
 
         # plot optimal tour file.
         if len(sys.argv) > 2:

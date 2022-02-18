@@ -6,7 +6,6 @@ from typing import Optional, Dict, Tuple, List
 
 from tsp_reader import read_instance
 from tsp_math import distance
-import random
 
 Instance = Dict[int, Tuple[float, float]] # point ID to coordinates
 Edge = Tuple[int, int, int] # distance, min point ID, max point ID
@@ -25,14 +24,8 @@ def make_sorted_edges(instance: Instance) -> List[Edge]:
         a = all_ids[i]
         for j in range(i + 1, n):
             b = all_ids[j]
-            randint = random.randint(0, n)
-            # add a random int so that edges arent deterministically placed in the MST.
-            edge = make_edge(instance, a=a, b=b)
-            edge = (edge[0], randint, edge[1], edge[2])
-            edges.append(edge)
+            edges.append(make_edge(instance, a=a, b=b))
     edges.sort()
-    # take out the random int.
-    edges = [(edge[0], edge[2], edge[3]) for edge in edges]
     return edges
 
 def mst(instance: Instance) -> List[Edge]:
@@ -83,7 +76,7 @@ def mst(instance: Instance) -> List[Edge]:
         check.add(b)
     assert(len(check) == len(instance))
 
-    return edges
+    return [(edge[1], edge[2]) for edge in edges]
 
 def get_degree_to_points(edges: List[Edge]):
     point_to_degree = {}
@@ -105,8 +98,6 @@ if __name__ == "__main__":
     instance_file = sys.argv[1]
     instance = read_instance(instance_file)
     edges = mst(instance=instance)
-    total = sum([e[0] for e in edges])
-    print(f'total cost: {total}')
 
     degree_to_points = get_degree_to_points(edges = edges)
     high_deg_points = []
@@ -114,6 +105,5 @@ if __name__ == "__main__":
         if deg >= 3:
             high_deg_points += degree_to_points[deg]
 
-    edges = [edge[1:] for edge in edges]
     tsp_plot.plot_edges(instance=instance, edges=edges, show=False)
     tsp_plot.plot_points_by_ids(instance=instance, point_ids=high_deg_points, style='ro', show=True)

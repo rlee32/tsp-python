@@ -52,7 +52,6 @@ if __name__ == "__main__":
     tsp_plot.plot_tour(instance=instance, tour=tour, show=False)
 
     edges = mst.mst(instance=instance)
-    edges = [edge[1:] for edge in edges]
     tsp_plot.plot_edges(instance=instance, edges=edges, linestyle="g-.", show=False)
 
     opt_tour = tsp_reader.read_tour(sys.argv[2])
