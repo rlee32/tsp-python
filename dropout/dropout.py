@@ -8,7 +8,7 @@ from tsp_types import Edge, Tour, Tuple, Instance
 import tsp_math
 import random
 
-THRESHOLD = 35
+THRESHOLD = 60
 MAX_INT = 100
 
 def random_drop(threshold: int, max_int: int) -> bool:
@@ -35,11 +35,21 @@ def hill_climb(instance: Instance, tour: Tour) -> Tour:
     new_length = tsp_math.tour_length(instance=instance, tour=new_tour)
     original_length = tsp_math.tour_length(instance=instance, tour=tour)
     print(f"dropout: {original_length} -> {new_length}")
-    kmoves = tsp_math.get_kmoves_between_tours(old_tour=tour, new_tour=new_tour)
-    print(f"got {len(kmoves)} kmoves.")
-    for kmove in kmoves:
-        gain = tsp_math.kmove_gain(instance=instance, kmove=kmove)
-        print(f"k={len(kmove[0])}, gain={gain}")
+    if original_length <= new_length:
+        kmoves = tsp_math.get_kmoves_between_tours(old_tour=tour, new_tour=new_tour)
+        print(f"got {len(kmoves)} kmoves.")
+        for kmove in kmoves:
+            gain = tsp_math.kmove_gain(instance=instance, kmove=kmove)
+            if gain > 0:
+                maybe_new_tour = tsp_math.apply_kmove(tour=tour, kmove=kmove)
+                if maybe_new_tour is not None:
+                    print(f"Improved! k={len(kmove[0])}, gain={gain}")
+                    new_tour = maybe_new_tour
+                    new_length = tsp_math.tour_length(instance=instance, tour=new_tour)
+                    assert(gain + new_length == original_length)
+                    break
+                else:
+                    print(f"k={len(kmove[0])}, gain={gain}")
     print()
     if new_length < original_length:
         return new_tour

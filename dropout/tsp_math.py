@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from typing import Tuple, List, Set
+from typing import Tuple, List, Set, Optional
 from tsp_types import Instance, Tour, Edge, Dict
 import math
 
@@ -167,3 +167,32 @@ def kmove_gain(instance: Instance, kmove: List[List[Edge]]) -> int:
     for added in kmove[1]:
         total -= distance(instance=instance, a=added[0], b=added[1])
     return total
+
+def apply_kmove(tour: Tour, kmove: List[List[Edge]]) -> Optional[Tour]:
+    edges = get_edges_from_tour(tour=tour)
+    edges = set(_normalize_edges(edges))
+    for edge in kmove[0]:
+        edges.remove(edge)
+    for edge in kmove[1]:
+        edges.add(edge)
+    points_to_edges = _map_points_to_edges(edges=edges)
+    for p in points_to_edges:
+        points_to_edges[p] = list(points_to_edges[p])
+        assert(len(points_to_edges[p]) == 2)
+    prev = next(iter(points_to_edges))
+    current = points_to_edges[prev][0][0] if points_to_edges[prev][0][0] != prev else points_to_edges[prev][0][1]
+    first = prev
+    new_tour = [prev]
+    while current != first:
+        new_tour.append(current)
+        prev_edge = _normalize_edge((current, prev))
+        next_edge = points_to_edges[current][0]
+        if prev_edge == next_edge:
+            next_edge = points_to_edges[current][1]
+        assert(prev_edge in points_to_edges[current])
+        new_prev = current
+        current = next_edge[0] if next_edge[0] != current else next_edge[1]
+        prev = new_prev
+    if len(tour) == len(new_tour):
+        assert(len(set(new_tour)) == len(new_tour))
+        return new_tour
