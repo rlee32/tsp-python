@@ -159,3 +159,11 @@ def get_kmoves_between_tours(old_tour: Tour, new_tour: Tour) -> List[List[Edge]]
                 kmoves[-1][1].append(edge)
         assert(len(kmoves[-1][0]) == len(kmoves[-1][1]))
     return kmoves
+
+def kmove_gain(instance: Instance, kmove: List[List[Edge]]) -> int:
+    total = 0
+    for deleted in kmove[0]:
+        total += distance(instance=instance, a=deleted[0], b=deleted[1])
+    for added in kmove[1]:
+        total -= distance(instance=instance, a=added[0], b=added[1])
+    return total

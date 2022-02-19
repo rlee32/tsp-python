@@ -37,6 +37,9 @@ def hill_climb(instance: Instance, tour: Tour) -> Tour:
     print(f"dropout: {original_length} -> {new_length}")
     kmoves = tsp_math.get_kmoves_between_tours(old_tour=tour, new_tour=new_tour)
     print(f"got {len(kmoves)} kmoves.")
+    for kmove in kmoves:
+        gain = tsp_math.kmove_gain(instance=instance, kmove=kmove)
+        print(f"k={len(kmove[0])}, gain={gain}")
     print()
     if new_length < original_length:
         return new_tour
