@@ -59,7 +59,7 @@ def show_plot():
     plt.show()
 
 import sys
-from tsp_reader import read_instance, read_tour
+from tsp_io import read_instance, read_tour
 
 if __name__ == '__main__':
     print("inputs: instance_path optional_tour_path")

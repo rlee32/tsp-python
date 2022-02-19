@@ -196,3 +196,13 @@ def apply_kmove(tour: Tour, kmove: List[List[Edge]]) -> Optional[Tour]:
     if len(tour) == len(new_tour):
         assert(len(set(new_tour)) == len(new_tour))
         return new_tour
+
+def apply_kmoves(tour: Tour, kmoves: List[List[List[Edge]]]) -> Optional[Tour]:
+    deletes = []
+    adds = []
+    for kmove in kmoves:
+        deletes += kmove[0]
+        adds += kmove[1]
+    return apply_kmove(tour=tour, kmove=[deletes, adds])
+
+

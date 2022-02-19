@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import tsp_reader
+import tsp_io
 import sys
 from typing import Optional, Dict, Tuple, List
 import tsp_math

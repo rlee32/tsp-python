@@ -4,7 +4,7 @@
 
 from typing import Optional, Dict, Tuple, List
 
-from tsp_reader import read_instance
+from tsp_reader import read_instance, read_tour
 from tsp_math import distance
 
 Instance = Dict[int, Tuple[float, float]] # point ID to coordinates
@@ -97,6 +97,7 @@ import tsp_plot
 if __name__ == "__main__":
     instance_file = sys.argv[1]
     instance = read_instance(instance_file)
+    tour = read_tour(path=sys.argv[2])
     edges = mst(instance=instance)
 
     degree_to_points = get_degree_to_points(edges = edges)
@@ -105,5 +106,6 @@ if __name__ == "__main__":
         if deg >= 3:
             high_deg_points += degree_to_points[deg]
 
+    tsp_plot.plot_tour(instance=instance, tour=tour, show=False)
     tsp_plot.plot_edges(instance=instance, edges=edges, show=False)
     tsp_plot.plot_points_by_ids(instance=instance, point_ids=high_deg_points, style='ro', show=True)

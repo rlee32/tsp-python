@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from typing import Dict, Tuple, List
+from tsp_types import Tour
 
 def read_instance(path: str) -> Dict[int, Tuple[float, float]]:
     """Reads a TSPLIB-formatted TSP instance (not tour) file, and returns it as a dict of point ID to coordinates. """
@@ -35,6 +36,14 @@ def read_tour(path: str) -> List[int]:
             point_id = int(fields[0])
             tour.append(point_id)
     return tour
+
+def write_tour(tour: Tour, path: str):
+    with open(path, "w") as f:
+        f.write("TOUR_SECTION\n")
+        for point in tour:
+            f.write(f"{str(point)}\n")
+        f.write("-1\n")
+        f.write("EOF\n")
 
 import sys
 
