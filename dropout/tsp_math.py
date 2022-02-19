@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from typing import Tuple, List
-from tsp_types import Instance, Tour, Edge
+from typing import Tuple, List, Set
+from tsp_types import Instance, Tour, Edge, Dict
 import math
 
 def distance(instance: Instance, a: int, b: int) -> int:
@@ -77,3 +77,85 @@ def add_midpoints_to_instance(instance: Instance, edges: List[Edge]):
     for edge in edges:
         new_point_ids.append(add_midpoint_to_instance(instance=instance, edge=edge))
     return new_point_ids
+
+def _normalize_edge(edge: Edge) -> Edge:
+    a, b = edge
+    return (min(a, b), max(a, b))
+
+def _normalize_edges(edges: List[Edge]) -> List[Edge]:
+    return [_normalize_edge(edge) for edge in edges]
+
+def tour_difference(old_tour: Tour, new_tour: Tour) -> Tuple[List[Edge], List[Edge]]:
+    old_edges = set(_normalize_edges(get_edges_from_tour(old_tour)))
+    new_edges = set(_normalize_edges(get_edges_from_tour(new_tour)))
+    deleted_edges = set()
+    for old_edge in old_edges:
+        if old_edge not in new_edges:
+            deleted_edges.add(old_edge)
+    added_edges = set()
+    for new_edge in new_edges:
+        if new_edge not in old_edges:
+            added_edges.add(new_edge)
+    for edge in deleted_edges:
+        assert(edge not in added_edges)
+    for edge in added_edges:
+        assert(edge not in deleted_edges)
+    assert(len(deleted_edges) == len(added_edges))
+    return deleted_edges, added_edges
+
+def _map_points_to_edges(edges: List[Edge]) -> Dict[int, Set[Edge]]:
+    edges = _normalize_edges(edges)
+    points_to_edges = {}
+    for edge in edges:
+        for p in edge:
+            if p not in points_to_edges:
+                points_to_edges[p] = set()
+            points_to_edges[p].add(edge)
+    for p in points_to_edges:
+        assert(len(points_to_edges[p]) in (2, 4))
+    return points_to_edges
+
+def disjoin_edge_set(edges: List[Edge]) -> Tuple[Set[Edge], List[Edge]]:
+    """Extracts one disjoint set of edges. Returns one disjoint set and the rest. """
+    points_to_edges = _map_points_to_edges(edges=edges)
+    edge_set = set()
+    seen = set()
+    to_explore = [next(iter(points_to_edges))]
+    while to_explore:
+        p = to_explore.pop()
+        adjacent = points_to_edges[p]
+        seen.add(p)
+        for edge in adjacent:
+            edge_set.add(edge)
+            for p in edge:
+                if p not in seen:
+                    to_explore.append(p)
+    remaining_edges = []
+    for edge in edges:
+        if edge not in edge_set:
+            remaining_edges.append(edge)
+    return edge_set, remaining_edges
+
+def disjoin_edge_sets(edges: List[Edge]) -> List[List[Edge]]:
+    if not edges:
+        return []
+    edge_set, remaining_edges = disjoin_edge_set(edges)
+    edge_sets = [edge_set]
+    while remaining_edges:
+        edge_set, remaining_edges = disjoin_edge_set(remaining_edges)
+        edge_sets.append(edge_set)
+    return edge_sets
+
+def get_kmoves_between_tours(old_tour: Tour, new_tour: Tour) -> List[List[Edge]]:
+    deleted, added = tour_difference(old_tour=old_tour, new_tour=new_tour)
+    edge_sets = disjoin_edge_sets(list(deleted) + list(added))
+    kmoves = []
+    for edge_set in edge_sets:
+        kmoves.append([[], []])
+        for edge in edge_set:
+            if edge in deleted:
+                kmoves[-1][0].append(edge)
+            else:
+                kmoves[-1][1].append(edge)
+        assert(len(kmoves[-1][0]) == len(kmoves[-1][1]))
+    return kmoves

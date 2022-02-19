@@ -8,8 +8,8 @@ from tsp_types import Edge, Tour, Tuple, Instance
 import tsp_math
 import random
 
-THRESHOLD = 4
-MAX_INT = 12
+THRESHOLD = 35
+MAX_INT = 100
 
 def random_drop(threshold: int, max_int: int) -> bool:
     assert(threshold < max_int)
@@ -35,11 +35,14 @@ def hill_climb(instance: Instance, tour: Tour) -> Tour:
     new_length = tsp_math.tour_length(instance=instance, tour=new_tour)
     original_length = tsp_math.tour_length(instance=instance, tour=tour)
     print(f"dropout: {original_length} -> {new_length}")
+    kmoves = tsp_math.get_kmoves_between_tours(old_tour=tour, new_tour=new_tour)
+    print(f"got {len(kmoves)} kmoves.")
     print()
     if new_length < original_length:
         return new_tour
     else:
         return tour
+
 
 if __name__ == "__main__":
     instance_file = sys.argv[1]
