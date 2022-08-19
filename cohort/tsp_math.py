@@ -23,6 +23,7 @@ def tour_length(instance: Instance, tour: Tour) -> int:
     for point_id in tour:
         total += distance(instance=instance, a=point_id, b=prev)
         prev = point_id
+    print(f"tour length: {total}")
     return total
 
 def get_edges_from_tour(tour: Tour) -> Tuple[Edge]:
@@ -221,12 +222,16 @@ def apply_kmove(tour: Tour, kmove: List[List[Edge]]) -> Optional[Tour]:
     if len(tour) == len(new_tour):
         return new_tour
 
-def is_dupe(tour: Tour, other_tour: Tour):
-    """Returns True if tour and other_tour are the same. """
+def is_dupe(instance: Instance, tour: Tour, other_tour: Tour):
+    """Returns True if tour and other_tour are the same. Also returns True if tour and other tour are the same cost and differ only by a 2-opt move."""
+    len1 = tour_length(instance=instance, tour=tour)
+    len2 = tour_length(instance=instance, tour=other_tour)
+    if len1 != len2:
+        return False
     edges = set(_normalize_edges(get_edges_from_tour(tour)))
     other_edges = set(_normalize_edges(get_edges_from_tour(other_tour)))
+    diff_edges = set()
     for edge in edges:
         if edge not in other_edges:
-            return False
-    return True
-
+            diff_edges.add(edge)
+    return len(diff_edges) <= 20
